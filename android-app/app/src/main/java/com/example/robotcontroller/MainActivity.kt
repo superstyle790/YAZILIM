@@ -20,6 +20,8 @@ import androidx.core.app.ActivityCompat
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var logText: TextView
     private var lastCommand: String = "S"
+    private lateinit var joystickPad: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val joystickArea: View = findViewById(R.id.joystickArea)
+        joystickPad = findViewById(R.id.joystickPad)
         joystickArea.setOnTouchListener { view, event ->
             handleJoystickTouch(view, event)
         }
@@ -56,14 +60,22 @@ class MainActivity : AppCompatActivity() {
         val dx = event.x - centerX
         val dy = event.y - centerY
 
-        val distance = kotlin.math.sqrt(dx * dx + dy * dy)
+        val distance = sqrt(dx * dx + dy * dy)
         val deadZone = (view.width.coerceAtMost(view.height) * 0.15f)
+        val maxRadius = (view.width.coerceAtMost(view.height) * 0.35f)
+
+        val clampedDistance = distance.coerceAtMost(maxRadius)
+        val angle = kotlin.math.atan2(dy, dx)
+        val padX = kotlin.math.cos(angle) * clampedDistance
+        val padY = kotlin.math.sin(angle) * clampedDistance
 
         return when (event.action) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                joystickPad.translationX = padX
+                joystickPad.translationY = padY
                 val command = if (distance < deadZone) {
                     "S"
-                } else if (kotlin.math.abs(dx) > kotlin.math.abs(dy)) {
+                } else if (abs(dx) > abs(dy)) {
                     if (dx > 0) "R" else "L"
                 } else {
                     if (dy > 0) "B" else "F"
@@ -72,6 +84,8 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                joystickPad.translationX = 0f
+                joystickPad.translationY = 0f
                 sendCommandIfChanged("S")
                 true
             }

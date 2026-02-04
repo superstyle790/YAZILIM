@@ -4,8 +4,8 @@ Bu uygulama, HC-06 Bluetooth modülü üzerinden Arduino tankını kontrol etmek
 
 ## Özellikler
 - HC-06 ile eşleşmiş cihazlara bağlanır.
-- İleri, geri, sağ, sol komutlarını gönderir.
-- Tuş bırakıldığında otomatik `S` (dur) komutu yollar.
+- Tek bir joystick alanı üzerinden ileri, geri, sağ, sol komutlarını gönderir.
+- Joystick bırakılınca veya merkezdeyken otomatik `S` (dur) komutu yollar.
 - Arduino'nun gönderdiği mesafe loglarını ekranda gösterir.
 
 ## Kurulum

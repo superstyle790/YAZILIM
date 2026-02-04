@@ -19,58 +19,27 @@
         android:layout_height="wrap_content"
         android:text="Bağlan (HC-06)" />
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="12dp"
+        android:text="Joystick"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/forwardButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="İleri" />
-
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Geri"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
-
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/joystickArea"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="8dp">
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        android:background="#E0E0E0">
 
-        <Button
-            android:id="@+id/leftButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sol" />
-
-        <Button
-            android:id="@+id/rightButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sağ"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Dur"
-        android:layout_marginTop="8dp" />
+        <View
+            android:id="@+id/joystickPad"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:background="#B0BEC5" />
+    </FrameLayout>
 
     <TextView
         android:layout_width="match_parent"

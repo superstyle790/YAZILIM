@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
     private lateinit var logText: TextView
+    private var lastCommand: String = "S"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,38 +40,51 @@ class MainActivity : AppCompatActivity() {
         logText = findViewById(R.id.logText)
 
         val connectButton: Button = findViewById(R.id.connectButton)
-        val forwardButton: Button = findViewById(R.id.forwardButton)
-        val backButton: Button = findViewById(R.id.backButton)
-        val leftButton: Button = findViewById(R.id.leftButton)
-        val rightButton: Button = findViewById(R.id.rightButton)
-        val stopButton: Button = findViewById(R.id.stopButton)
-
         connectButton.setOnClickListener {
             connectToHc06()
         }
 
-        forwardButton.setOnTouchListener { _, event -> handleDirectionalTouch(event, "F") }
-        backButton.setOnTouchListener { _, event -> handleDirectionalTouch(event, "B") }
-        leftButton.setOnTouchListener { _, event -> handleDirectionalTouch(event, "L") }
-        rightButton.setOnTouchListener { _, event -> handleDirectionalTouch(event, "R") }
-
-        stopButton.setOnClickListener {
-            sendCommand("S")
+        val joystickArea: View = findViewById(R.id.joystickArea)
+        joystickArea.setOnTouchListener { view, event ->
+            handleJoystickTouch(view, event)
         }
     }
 
-    private fun handleDirectionalTouch(event: MotionEvent, command: String): Boolean {
+    private fun handleJoystickTouch(view: View, event: MotionEvent): Boolean {
+        val centerX = view.width / 2f
+        val centerY = view.height / 2f
+        val dx = event.x - centerX
+        val dy = event.y - centerY
+
+        val distance = kotlin.math.sqrt(dx * dx + dy * dy)
+        val deadZone = (view.width.coerceAtMost(view.height) * 0.15f)
+
         return when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                sendCommand(command)
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                val command = if (distance < deadZone) {
+                    "S"
+                } else if (kotlin.math.abs(dx) > kotlin.math.abs(dy)) {
+                    if (dx > 0) "R" else "L"
+                } else {
+                    if (dy > 0) "B" else "F"
+                }
+                sendCommandIfChanged(command)
                 true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                sendCommand("S")
+                sendCommandIfChanged("S")
                 true
             }
             else -> false
         }
+    }
+
+    private fun sendCommandIfChanged(command: String) {
+        if (lastCommand == command) {
+            return
+        }
+        lastCommand = command
+        sendCommand(command)
     }
 
     private fun connectToHc06() {
